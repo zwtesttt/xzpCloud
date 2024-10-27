@@ -5,7 +5,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"k8s.io/client-go/rest"
 	"os"
 	"path/filepath"
 
@@ -40,9 +39,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	// 禁用证书校验
-	config.TLSClientConfig = rest.TLSClientConfig{Insecure: true}
 
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
