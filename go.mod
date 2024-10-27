@@ -1,4 +1,4 @@
-module github.com/zzwtesttt/xzpCloud
+module github.com/zwtesttt/xzpCloud
 
 go 1.23.2
 
