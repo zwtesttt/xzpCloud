@@ -3,18 +3,20 @@ package main
 import (
 	"context"
 	"fmt"
-	ordergrpc "github.com/zwtesttt/xzpCloud/internal/order/api/grpc"
-	"github.com/zwtesttt/xzpCloud/internal/order/api/handler"
-	"google.golang.org/grpc"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"google.golang.org/grpc"
+
+	ordergrpc "github.com/zwtesttt/xzpCloud/internal/order/api/grpc"
+	"github.com/zwtesttt/xzpCloud/internal/order/api/handler"
 )
 
 var (
-	studown = make(chan struct{}, 1)
+	shutdown = make(chan struct{}, 1)
 )
 
 func main() {
@@ -31,7 +33,7 @@ func main() {
 	go startGrpc(grpcSvc)
 	go gracefullyStudown(context.Background(), grpcSvc, httpSvc)
 
-	<-studown
+	<-shutdown
 }
 
 func gracefullyStudown(ctx context.Context, grpcSvc *grpc.Server, r *http.Server) {
@@ -51,7 +53,7 @@ func gracefullyStudown(ctx context.Context, grpcSvc *grpc.Server, r *http.Server
 		return
 	}
 
-	close(studown)
+	close(shutdown)
 }
 
 func startGrpc(grpcSvc *grpc.Server) {
