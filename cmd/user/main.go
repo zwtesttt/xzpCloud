@@ -39,12 +39,12 @@ func main() {
 
 	go startHttp(r)
 	go startGrpc(grpcSvc)
-	go gracefullyStudown(context.Background(), grpcSvc, httpSvc)
+	go gracefullyShutdown(context.Background(), grpcSvc, httpSvc)
 
 	<-shutdown
 }
 
-func gracefullyStudown(ctx context.Context, grpcSvc *grpc.Server, r *http.Server) {
+func gracefullyShutdown(ctx context.Context, grpcSvc *grpc.Server, r *http.Server) {
 	// 创建一个通道，用于接收信号
 	sigChan := make(chan os.Signal, 1)
 	// 注册要监听的信号,在控制台中输入 ctrl+c 可以发送信号其他信号也是差不多

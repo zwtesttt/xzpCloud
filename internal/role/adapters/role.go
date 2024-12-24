@@ -3,6 +3,7 @@ package adapters
 import (
 	"context"
 	"github.com/zwtesttt/xzpCloud/internal/role/domain"
+	"github.com/zwtesttt/xzpCloud/pkg/role"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -23,7 +24,7 @@ type Policy struct {
 }
 
 func (r *Role) ToRole() *domain.Role {
-	return domain.NewRole(r.Name, r.Description, ToPolicies(r.Policies), domain.RoleType(r.Type), r.CreatedAt, r.UpdatedAt)
+	return domain.NewRole(r.Name, r.Description, ToPolicies(r.Policies), role.Type(r.Type), r.CreatedAt, r.UpdatedAt)
 }
 
 func (p *Policy) ToPolicy() *domain.Policy {
@@ -48,7 +49,7 @@ func NewRoleRepository(db *mongo.Database) *RoleRepository {
 	}
 }
 
-func (r *RoleRepository) FindOne(ctx context.Context, t domain.RoleType) (*domain.Role, error) {
+func (r *RoleRepository) FindOne(ctx context.Context, t role.Type) (*domain.Role, error) {
 	//TODO implement me
 	panic("implement me")
 }
