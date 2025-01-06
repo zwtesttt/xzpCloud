@@ -63,6 +63,10 @@ func (o *Order) Status() OrderStatus {
 	return o.status
 }
 
+func (o *Order) SetStatus(status OrderStatus) {
+	o.status = status
+}
+
 func (o *Order) Items() []*Item {
 	return o.items
 }

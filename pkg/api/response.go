@@ -53,6 +53,14 @@ func RenderErrorWithStatus(c *gin.Context, err error, code int) {
 	})
 }
 
+// 未认证
+func RenderUnauthorized(c *gin.Context) {
+	c.JSON(http.StatusUnauthorized, Response{
+		Code: Unauthorized,
+		Msg:  StrUnauthorized,
+	})
+}
+
 func RenderInternalServerError(c *gin.Context, err error) {
 	c.JSON(http.StatusInternalServerError, Response{
 		Code: http.StatusInternalServerError,

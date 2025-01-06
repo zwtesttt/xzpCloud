@@ -20,7 +20,7 @@ func GetDB() *mongo.Database {
 
 func InitDatabase(cfg *config.Config) error {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI("mongodb://192.168.3.63:27017").SetServerAPIOptions(serverAPI)
+	opts := options.Client().ApplyURI("mongodb://192.168.195.63:27017").SetServerAPIOptions(serverAPI)
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
 		return err

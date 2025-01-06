@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/zwtesttt/xzpCloud/pkg/config"
+	"github.com/zwtesttt/xzpCloud/pkg/db"
 	"net"
 	"net/http"
 	"os"
@@ -20,6 +22,12 @@ var (
 )
 
 func main() {
+	err := initClient(nil)
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return
+	}
+
 	var (
 		r       = handler.New()
 		grpcSvc = ordergrpc.New()
@@ -79,4 +87,13 @@ func startHttp(r *handler.Handler) {
 		fmt.Println("Error: ", err)
 		return
 	}
+}
+
+func initClient(cfg *config.Config) error {
+	err := db.InitDatabase(nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

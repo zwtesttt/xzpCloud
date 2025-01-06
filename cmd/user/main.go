@@ -13,7 +13,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	ordergrpc "github.com/zwtesttt/xzpCloud/internal/order/api/grpc"
+	usergrpc "github.com/zwtesttt/xzpCloud/internal/order/api/grpc"
 	"github.com/zwtesttt/xzpCloud/internal/user/api/handler"
 )
 
@@ -30,7 +30,7 @@ func main() {
 
 	var (
 		r       = handler.New()
-		grpcSvc = ordergrpc.New()
+		grpcSvc = usergrpc.New()
 		httpSvc = &http.Server{
 			Addr:    ":8080",
 			Handler: r,
