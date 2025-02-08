@@ -5,9 +5,33 @@ type Vm struct {
 	name         string
 	status       VmStatus
 	userId       string
+	config       *VmConfig
 	createdAt    int64
 	updatedAt    int64
 	expirationAt int64
+	deletedAt    int64
+}
+
+type VmConfig struct {
+	cpu    int
+	disk   string
+	memory string
+}
+
+func NewVmConfig(cpu int, disk string, memory string) *VmConfig {
+	return &VmConfig{cpu: cpu, disk: disk, memory: memory}
+}
+
+func (v *VmConfig) Cpu() int {
+	return v.cpu
+}
+
+func (v *VmConfig) Disk() string {
+	return v.disk
+}
+
+func (v *VmConfig) Memory() string {
+	return v.memory
 }
 
 type VmStatus int
@@ -19,8 +43,8 @@ const (
 	VmStatusStart VmStatus = 1
 )
 
-func NewVm(id string, name string, status VmStatus, userId string, createdAt int64, updatedAt int64, expirationAt int64) *Vm {
-	return &Vm{id: id, name: name, status: status, userId: userId, createdAt: createdAt, updatedAt: updatedAt, expirationAt: expirationAt}
+func NewVm(id string, name string, status VmStatus, userId string, cfg *VmConfig, createdAt int64, updatedAt int64, expirationAt int64, deletedAt int64) *Vm {
+	return &Vm{id: id, name: name, status: status, userId: userId, config: cfg, createdAt: createdAt, updatedAt: updatedAt, expirationAt: expirationAt, deletedAt: deletedAt}
 }
 
 func (v *Vm) Id() string {
@@ -49,4 +73,12 @@ func (v *Vm) UpdatedAt() int64 {
 
 func (v *Vm) ExpirationAt() int64 {
 	return v.expirationAt
+}
+
+func (v *Vm) DeletedAt() int64 {
+	return v.deletedAt
+}
+
+func (v *Vm) Config() *VmConfig {
+	return v.config
 }

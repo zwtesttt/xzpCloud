@@ -1,0 +1,6 @@
+kube-config:
+  path: /home/ubuntu/.kube/config
+
+mongo-config:
+  host: 192.168.195.63
+  port: 27017

@@ -2,10 +2,13 @@ package db
 
 import (
 	"context"
-	"github.com/zwtesttt/xzpCloud/pkg/config"
+	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"github.com/zwtesttt/xzpCloud/pkg/config"
 )
 
 var (
@@ -20,7 +23,7 @@ func GetDB() *mongo.Database {
 
 func InitDatabase(cfg *config.Config) error {
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI("mongodb://192.168.195.63:27017").SetServerAPIOptions(serverAPI)
+	opts := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s", cfg.MongoConfig.Addr())).SetServerAPIOptions(serverAPI)
 	client, err := mongo.Connect(context.TODO(), opts)
 	if err != nil {
 		return err
