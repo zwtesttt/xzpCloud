@@ -1,10 +1,12 @@
 package domain
 
+import "github.com/zwtesttt/xzpCloud/pkg/role"
+
 type Role struct {
 	name        string
 	description string
 	policies    []*Policy
-	roleType    RoleType
+	roleType    role.Type
 	createdAt   int64
 	updatedAt   int64
 }
@@ -14,14 +16,7 @@ type Policy struct {
 	effect string
 }
 
-type RoleType int
-
-const (
-	RoleTypeUser  RoleType = iota // 用户
-	RoleTypeAdmin                 // 管理员
-)
-
-func NewRole(name, description string, policies []*Policy, roleType RoleType, createdAt, updatedAt int64) *Role {
+func NewRole(name, description string, policies []*Policy, roleType role.Type, createdAt, updatedAt int64) *Role {
 	return &Role{
 		name:        name,
 		description: description,
@@ -51,7 +46,7 @@ func (r *Role) Policies() []*Policy {
 	return r.policies
 }
 
-func (r *Role) RoleType() RoleType {
+func (r *Role) RoleType() role.Type {
 	return r.roleType
 }
 
