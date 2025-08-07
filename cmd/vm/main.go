@@ -24,16 +24,24 @@ var (
 )
 
 func main() {
-	cfg := config.Init("./config/vm.yaml")
+
+	configPath := os.Getenv("VM_CONFIG")
+	if configPath == "" {
+		configPath = "./config/vm.yaml"
+	}
+	cfg := config.Init(configPath)
 	err := initClient(cfg)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
 
+	// 设置Gin模式，关闭调试日志
+	config.SetupGinMode(cfg.Log.Level)
+
 	var (
-		r       = handler.New(vmicli)
-		grpcSvc = vmgrpc.New()
+		r       = handler.New(cfg, vmicli)
+		grpcSvc = vmgrpc.New(cfg)
 		httpSvc = &http.Server{
 			Addr:    ":8080",
 			Handler: r,
@@ -75,7 +83,7 @@ func startGrpc(grpcSvc *grpc.Server) {
 		return
 	}
 
-	fmt.Println("grpc server start")
+	fmt.Println("vm grpc server start on :8081")
 	err = grpcSvc.Serve(listen)
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -85,6 +93,7 @@ func startGrpc(grpcSvc *grpc.Server) {
 
 func startHttp(r *handler.Handler) {
 	//http服务器
+	fmt.Println("vm http server start on :8080")
 	err := r.Run(":8080")
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -98,6 +107,7 @@ func initClient(cfg *config.Config) error {
 		return err
 	}
 
+	fmt.Println("cfg", cfg.KubeConfig)
 	vmicli = vmi.NewVirtHandler(cfg)
 	return nil
 }

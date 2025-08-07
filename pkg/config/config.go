@@ -1,14 +1,27 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Config struct {
 	KubeConfig  *KubeConfig  `yaml:"kube-config"`
 	MongoConfig *MongoConfig `yaml:"mongo-config"`
+	Log         *LogConfig   `yaml:"log"`
 }
 
 type KubeConfig struct {
 	Path string `yaml:"path"`
+}
+
+type LogConfig struct {
+	Level           string        `yaml:"level"`
+	SkipPaths       []string      `yaml:"skip-paths"`
+	LogRequestBody  bool          `yaml:"log-request-body"`
+	LogResponseBody bool          `yaml:"log-response-body"`
+	MaxBodySize     int64         `yaml:"max-body-size"`
+	SlowThreshold   time.Duration `yaml:"slow-threshold"`
 }
 
 type MongoConfig struct {

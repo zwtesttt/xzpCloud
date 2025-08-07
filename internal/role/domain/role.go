@@ -14,6 +14,13 @@ type Policy struct {
 	effect string
 }
 
+type RoleType int
+
+const (
+	RoleTypeUser  RoleType = iota // 用户
+	RoleTypeAdmin                 // 管理员
+)
+
 func NewRole(name, description string, policies []*Policy, roleType RoleType, createdAt, updatedAt int64) *Role {
 	return &Role{
 		name:        name,

@@ -17,7 +17,6 @@ import (
 
 type VirtHandler struct {
 	kubeClient clientcmd.ClientConfig
-	cfg        *config.Config
 	virtClient kubecli.KubevirtClient
 }
 
@@ -26,7 +25,7 @@ var _ VirtualMachineInterface = &VirtHandler{}
 func NewVirtHandler(cfg *config.Config) VirtualMachineInterface {
 	//client := kubecli.DefaultClientConfig(&pflag.FlagSet{})
 	//loadingRules := &clientcmd.ClientConfigLoadingRules{ExplicitPath: cfg.KubeConfig.Path}
-	loadingRules := &clientcmd.ClientConfigLoadingRules{ExplicitPath: "/home/ubuntu/.kube/config"}
+	loadingRules := &clientcmd.ClientConfigLoadingRules{ExplicitPath: cfg.KubeConfig.Path}
 
 	configOverrides := &clientcmd.ConfigOverrides{}
 	client := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
@@ -41,7 +40,7 @@ func NewVirtHandler(cfg *config.Config) VirtualMachineInterface {
 	}
 }
 
-func (v *VirtHandler) Create(ctx context.Context, cfg *Config) (interface{}, error) {
+func (v *VirtHandler) Create(ctx context.Context, cfg *Config) (any, error) {
 	//资源列表
 	resources := make(apiv1.ResourceList)
 	q, err := resource.ParseQuantity("64M")
@@ -108,17 +107,15 @@ func (v *VirtHandler) Create(ctx context.Context, cfg *Config) (interface{}, err
 					},
 				},
 			},
-			Running: BoolPtr(true),
+			RunStrategy: RunStrategyPtr(v1.RunStrategyAlways),
 		}}, k8smetav1.CreateOptions{})
 	if err != nil {
-		return nil, fmt.Errorf("error in create vm: %v\n", err)
+		return nil, fmt.Errorf("error in create vm: %v", err)
 	}
-	fmt.Printf("Created VM %s\n", create.ObjectMeta.Name)
-	return nil, nil
+	return create, nil
 }
 
 func (v *VirtHandler) Delete(ctx context.Context, cfg *Config) error {
-	fmt.Printf("Deleting VM %s\n", cfg.Name)
 	err := v.virtClient.VirtualMachine(cfg.Namespace).Delete(ctx, cfg.Name, k8smetav1.DeleteOptions{})
 	if err != nil {
 		return err
@@ -127,3 +124,39 @@ func (v *VirtHandler) Delete(ctx context.Context, cfg *Config) error {
 }
 
 func BoolPtr(i bool) *bool { return &i }
+
+func RunStrategyPtr(rs v1.VirtualMachineRunStrategy) *v1.VirtualMachineRunStrategy { return &rs }
+
+func (v *VirtHandler) Start(ctx context.Context, cfg *Config) error {
+	// 启动虚拟机：更新RunStrategy为Always
+	vm, err := v.virtClient.VirtualMachine(cfg.Namespace).Get(ctx, cfg.Name, k8smetav1.GetOptions{})
+	if err != nil {
+		return fmt.Errorf("error getting vm %s: %v", cfg.Name, err)
+	}
+
+	vm.Spec.RunStrategy = RunStrategyPtr(v1.RunStrategyAlways)
+	_, err = v.virtClient.VirtualMachine(cfg.Namespace).Update(ctx, vm, k8smetav1.UpdateOptions{})
+	if err != nil {
+		return fmt.Errorf("error starting vm %s: %v", cfg.Name, err)
+	}
+
+	fmt.Printf("Started VM %s\n", cfg.Name)
+	return nil
+}
+
+func (v *VirtHandler) Stop(ctx context.Context, cfg *Config) error {
+	// 停止虚拟机：更新RunStrategy为Halted
+	vm, err := v.virtClient.VirtualMachine(cfg.Namespace).Get(ctx, cfg.Name, k8smetav1.GetOptions{})
+	if err != nil {
+		return fmt.Errorf("error getting vm %s: %v", cfg.Name, err)
+	}
+
+	vm.Spec.RunStrategy = RunStrategyPtr(v1.RunStrategyHalted)
+	_, err = v.virtClient.VirtualMachine(cfg.Namespace).Update(ctx, vm, k8smetav1.UpdateOptions{})
+	if err != nil {
+		return fmt.Errorf("error stopping vm %s: %v", cfg.Name, err)
+	}
+
+	fmt.Printf("Stopped VM %s\n", cfg.Name)
+	return nil
+}

@@ -22,17 +22,22 @@ var (
 )
 
 func main() {
-	err := initClient(nil)
+
+	cfg := config.Init("./config/product.yaml")
+	err := initClient(cfg)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
 
+	// 设置Gin模式
+	config.SetupGinMode(cfg.Log.Level)
+
 	var (
 		r       = handler.New()
 		grpcSvc = ordergrpc.New()
 		httpSvc = &http.Server{
-			Addr:    ":8080",
+			Addr:    ":8084",
 			Handler: r,
 		}
 	)
@@ -66,13 +71,13 @@ func gracefullyShutdown(ctx context.Context, grpcSvc *grpc.Server, r *http.Serve
 
 func startGrpc(grpcSvc *grpc.Server) {
 	//grpc服务器
-	listen, err := net.Listen("tcp", ":8081")
+	listen, err := net.Listen("tcp", ":8085")
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
 
-	fmt.Println("grpc server start")
+	fmt.Println("product grpc server start on :8085")
 	err = grpcSvc.Serve(listen)
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -82,7 +87,8 @@ func startGrpc(grpcSvc *grpc.Server) {
 
 func startHttp(r *handler.Handler) {
 	//http服务器
-	err := r.Run(":8080")
+	fmt.Println("product http server start on :8084")
+	err := r.Run(":8084")
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
@@ -90,7 +96,7 @@ func startHttp(r *handler.Handler) {
 }
 
 func initClient(cfg *config.Config) error {
-	err := db.InitDatabase(nil)
+	err := db.InitDatabase(cfg)
 	if err != nil {
 		return err
 	}

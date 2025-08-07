@@ -1,6 +1,18 @@
 kube-config:
-  path: /home/ubuntu/.kube/config
+  path: ./config/kubeconfig
 
 mongo-config:
-  host: 192.168.195.63
+  host: 127.0.0.1
   port: 27017
+  username: "root"  # 如果需要认证，请填写用户名
+  password: "qwe@123"  # 如果需要认证，请填写密码
+
+log:
+  level: "debug"
+  skip-paths:
+    - "/health"
+    - "/metrics"
+  log-request-body: true
+  log-response-body: true
+  max-body-size: 2048
+  slow-threshold: 100ms

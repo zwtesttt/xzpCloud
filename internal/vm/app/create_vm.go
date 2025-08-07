@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+
 	"github.com/zwtesttt/xzpCloud/internal/vm/domain"
 	"github.com/zwtesttt/xzpCloud/pkg/vmi"
 )
@@ -40,9 +41,9 @@ func (h *CreateVmHandler) Handle(ctx context.Context, input *CreateVmInput) (str
 		return "", err
 	}
 
-	err = h.vmRepo.Insert(ctx, domain.NewVm("", input.Name, domain.VmStatusStart, input.UserId, domain.NewVmConfig(input.Config.Cpu, input.Config.Disk, input.Config.Memory), 0, 0, 0, 0))
+	id, err := h.vmRepo.Insert(ctx, domain.NewVm("", input.Name, domain.VmStatusStart, input.UserId, domain.NewVmConfig(input.Config.Cpu, input.Config.Disk, input.Config.Memory), 0, 0, 0, 0))
 	if err != nil {
 		return "", err
 	}
-	return "6666", nil
+	return id, nil
 }

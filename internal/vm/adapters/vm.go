@@ -49,9 +49,10 @@ func NewVmRepository(db *mongo.Database) domain.Repository {
 	}
 }
 
-func (v *VmRepository) Insert(ctx context.Context, vm *domain.Vm) error {
+func (v *VmRepository) Insert(ctx context.Context, vm *domain.Vm) (string, error) {
+	id := primitive.NewObjectID()
 	_, err := v.collection.InsertOne(ctx, &Vm{
-		Id:     primitive.NewObjectID(),
+		Id:     id,
 		Name:   vm.Name(),
 		Status: int(vm.Status()),
 		UserId: vm.UserId(),
@@ -64,7 +65,10 @@ func (v *VmRepository) Insert(ctx context.Context, vm *domain.Vm) error {
 		UpdatedAt:    time.Now().UnixMilli(),
 		ExpirationAt: vm.ExpirationAt(),
 	})
-	return err
+	if err != nil {
+		return "", err
+	}
+	return id.Hex(), nil
 }
 
 func (v *VmRepository) FindOne(ctx context.Context, id string) (*domain.Vm, error) {
@@ -133,4 +137,33 @@ func (v *VmRepository) Find(ctx context.Context, opts *domain.VmFindOptions) ([]
 	}
 
 	return dres, nil
+}
+
+func (v *VmRepository) Update(ctx context.Context, vm *domain.Vm) error {
+	vid, err := primitive.ObjectIDFromHex(vm.Id())
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"id": vid}
+	update := bson.M{
+		"$set": bson.M{
+			"name":          vm.Name(),
+			"status":        int(vm.Status()),
+			"user_id":       vm.UserId(),
+			"updated_at":    time.Now().UnixMilli(),
+			"expiration_at": vm.ExpirationAt(),
+			"config": &VmConfig{
+				Cpu:    vm.Config().Cpu(),
+				Disk:   vm.Config().Disk(),
+				Memory: vm.Config().Memory(),
+			},
+		},
+	}
+
+	_, err = v.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
 }

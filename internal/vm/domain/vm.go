@@ -37,9 +37,9 @@ func (v *VmConfig) Memory() string {
 type VmStatus int
 
 const (
-	//VmStatusStop 停用
+	//VmStatusStop 停止
 	VmStatusStop VmStatus = -1
-	//VmStatusStart 正常
+	//VmStatusStart 运行中
 	VmStatusStart VmStatus = 1
 )
 
@@ -81,4 +81,8 @@ func (v *Vm) DeletedAt() int64 {
 
 func (v *Vm) Config() *VmConfig {
 	return v.config
+}
+
+func (v *Vm) SetStatus(status VmStatus) {
+	v.status = status
 }
