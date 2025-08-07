@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/zwtesttt/xzpCloud/internal/product/adapters"
 	"github.com/zwtesttt/xzpCloud/internal/product/app"
+	"github.com/zwtesttt/xzpCloud/pkg/api/middleware"
 	"github.com/zwtesttt/xzpCloud/pkg/db"
 )
 
@@ -18,6 +19,8 @@ func New() *Handler {
 		Engine:             gin.New(),
 		GetProductsHandler: app.NewGetProductsHandler(productRepo),
 	}
+
+	h.Use(middleware.Recovery())
 
 	p := h.Group("/product")
 	p.GET("/", h.GetProducts)

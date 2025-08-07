@@ -1,5 +1,5 @@
 kube-config:
-  path: ./config/kubeconfig
+  path: ./config/kubeconfig-local
 
 mongo-config:
   host: 127.0.0.1

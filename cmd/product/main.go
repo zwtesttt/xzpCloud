@@ -22,16 +22,12 @@ var (
 )
 
 func main() {
-
 	cfg := config.Init("./config/product.yaml")
 	err := initClient(cfg)
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
-
-	// 设置Gin模式
-	config.SetupGinMode(cfg.Log.Level)
 
 	var (
 		r       = handler.New()

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/zwtesttt/xzpCloud/internal/order/adapters"
 	"github.com/zwtesttt/xzpCloud/internal/order/app"
+	"github.com/zwtesttt/xzpCloud/pkg/api/middleware"
 	"github.com/zwtesttt/xzpCloud/pkg/db"
 )
 
@@ -27,6 +28,8 @@ func New() *Handler {
 		payOrderHandler:     app.NewPayOrderHandler(orderRepo),
 		getOrderListHandler: app.NewGetOrderListHandler(orderRepo),
 	}
+
+	h.Use(middleware.Recovery())
 
 	o := h.Group("order")
 	//查询订单列表

@@ -5,7 +5,6 @@ import (
 	"github.com/zwtesttt/xzpCloud/internal/vm/adapters"
 	"github.com/zwtesttt/xzpCloud/internal/vm/app"
 	"github.com/zwtesttt/xzpCloud/pkg/api/middleware"
-	"github.com/zwtesttt/xzpCloud/pkg/config"
 	"github.com/zwtesttt/xzpCloud/pkg/db"
 	"github.com/zwtesttt/xzpCloud/pkg/vmi"
 )
@@ -19,7 +18,7 @@ type Handler struct {
 	stopVmHandler   *app.StopVmHandler
 }
 
-func New(cfg *config.Config, vmiCli vmi.VirtualMachineInterface) *Handler {
+func New(vmiCli vmi.VirtualMachineInterface) *Handler {
 	vmRepo := adapters.NewVmRepository(db.GetDB())
 
 	h := &Handler{
@@ -32,13 +31,6 @@ func New(cfg *config.Config, vmiCli vmi.VirtualMachineInterface) *Handler {
 	}
 
 	h.Use(middleware.Recovery())
-	h.Use(middleware.StructuredLoggerWithConfig(middleware.LoggerConfig{
-		SkipPaths:       cfg.Log.SkipPaths,
-		LogRequestBody:  cfg.Log.LogRequestBody,
-		LogResponseBody: cfg.Log.LogResponseBody,
-		MaxBodySize:     cfg.Log.MaxBodySize,
-		SlowThreshold:   cfg.Log.SlowThreshold,
-	}))
 
 	o := h.Group("vm")
 	o.POST("/", h.CreateVm)

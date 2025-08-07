@@ -24,7 +24,6 @@ var (
 )
 
 func main() {
-
 	configPath := os.Getenv("VM_CONFIG")
 	if configPath == "" {
 		configPath = "./config/vm.yaml"
@@ -36,11 +35,8 @@ func main() {
 		return
 	}
 
-	// 设置Gin模式，关闭调试日志
-	config.SetupGinMode(cfg.Log.Level)
-
 	var (
-		r       = handler.New(cfg, vmicli)
+		r       = handler.New(vmicli)
 		grpcSvc = vmgrpc.New(cfg)
 		httpSvc = &http.Server{
 			Addr:    ":8080",
