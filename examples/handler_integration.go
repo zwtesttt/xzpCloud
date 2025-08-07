@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"time"
-	
+
 	"github.com/gin-gonic/gin"
 	"github.com/zwtesttt/xzpCloud/pkg/api/middleware"
 	"github.com/zwtesttt/xzpCloud/pkg/log"
@@ -15,27 +15,26 @@ import (
 // 示例：如何更新 internal/vm/api/handler/handler.go
 func ExampleVMHandlerIntegration() {
 	fmt.Println("=== VM Handler 集成示例 ===")
-	
+
 	// 创建自定义日志配置
 	logConfig := middleware.LoggerConfig{
 		SkipPaths:       []string{"/health", "/metrics"},
 		LogRequestBody:  true,
 		LogResponseBody: true,
-		MaxBodySize:     2048, // 2KB
+		MaxBodySize:     2048,                   // 2KB
 		SlowThreshold:   100 * time.Millisecond, // VM操作可能较慢，设置更低的阈值
 	}
 
 	// 模拟VM Handler的创建过程
 	h := gin.New()
-	
+
 	// 1. 添加基础中间件
 	h.Use(middleware.Recovery())
-	h.Use(middleware.RequestIDMiddleware())
 	h.Use(middleware.StructuredLoggerWithConfig(logConfig))
 
 	// 2. 设置路由组
 	vm := h.Group("vm")
-	
+
 	// 模拟路由（实际应用中这些会调用真实的handler方法）
 	vm.POST("/", func(c *gin.Context) {
 		// 在handler内部也可以使用结构化日志
@@ -43,15 +42,15 @@ func ExampleVMHandlerIntegration() {
 			log.String("request_id", c.GetString("request_id")),
 			log.String("user_id", c.GetHeader("User-ID")),
 		)
-		
+
 		c.JSON(201, gin.H{"message": "VM创建成功", "vm_id": "vm-123"})
 	})
-	
+
 	vm.GET("/", func(c *gin.Context) {
 		log.StructuredDebug("查询虚拟机列表",
 			log.String("request_id", c.GetString("request_id")),
 		)
-		
+
 		c.JSON(200, gin.H{"vms": []string{"vm-1", "vm-2"}})
 	})
 
@@ -61,7 +60,7 @@ func ExampleVMHandlerIntegration() {
 // 示例：如何更新 internal/user/api/handler/handler.go
 func ExampleUserHandlerIntegration() {
 	fmt.Println("=== User Handler 集成示例 ===")
-	
+
 	// 用户服务的日志配置
 	logConfig := middleware.LoggerConfig{
 		SkipPaths:       []string{"/health"},
@@ -73,7 +72,6 @@ func ExampleUserHandlerIntegration() {
 
 	h := gin.New()
 	h.Use(middleware.Recovery())
-	h.Use(middleware.RequestIDMiddleware())
 	h.Use(middleware.StructuredLoggerWithConfig(logConfig))
 
 	user := h.Group("/user")
@@ -84,7 +82,7 @@ func ExampleUserHandlerIntegration() {
 			log.String("ip", c.ClientIP()),
 			log.String("user_agent", c.GetHeader("User-Agent")),
 		)
-		
+
 		c.JSON(200, gin.H{"message": "登录成功", "token": "***"})
 	})
 
@@ -94,7 +92,7 @@ func ExampleUserHandlerIntegration() {
 // 示例：现有代码的改造指南
 func ExampleMigrationGuide() {
 	fmt.Println("\n=== 现有代码改造指南 ===")
-	
+
 	fmt.Println(`
 1. 更新 internal/vm/api/handler/handler.go:
 
