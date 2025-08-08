@@ -23,6 +23,7 @@ type Vm struct {
 	Id           string    `json:"id"`
 	Name         string    `json:"name"`
 	Status       int       `json:"status"`
+	Ip           string    `json:"ip"`
 }
 
 type VmConfig struct {
@@ -52,6 +53,7 @@ func (h *Handler) GetVms(ctx *gin.Context) {
 			Name:         v.Name,
 			Status:       v.Status,
 			ExpirationAt: v.ExpirationAt,
+			Ip:           v.Ip,
 			Config: &VmConfig{
 				Cpu:    v.Config.Cpu,
 				Memory: v.Config.Memory,

@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+
 	"github.com/zwtesttt/xzpCloud/internal/vm/domain"
 )
 
@@ -19,6 +20,7 @@ type Vm struct {
 	Id     string
 	Name   string
 	Status int
+	Ip     string
 	Config *VmConfig
 	//过期时间
 	ExpirationAt int64
@@ -50,6 +52,7 @@ func (h *GetVmsHandler) Handle(ctx context.Context, input *GetVmsInput) (*GetVms
 			Id:           v.Id(),
 			Name:         v.Name(),
 			Status:       int(v.Status()),
+			Ip:           v.Ip(),
 			ExpirationAt: v.ExpirationAt(),
 			Config: &VmConfig{
 				Cpu:    v.Config().Cpu(),

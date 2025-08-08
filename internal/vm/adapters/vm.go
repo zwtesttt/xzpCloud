@@ -18,6 +18,7 @@ type Vm struct {
 	Name         string             `bson:"name"`
 	Status       int                `bson:"status"`
 	UserId       string             `bson:"user_id"`
+	Ip           string             `bson:"ip"`
 	Config       *VmConfig          `bson:"config"`
 	CreatedAt    int64              `bson:"created_at"`
 	UpdatedAt    int64              `bson:"updated_at"`
@@ -32,7 +33,7 @@ type VmConfig struct {
 }
 
 func (v *Vm) ToVm() *domain.Vm {
-	return domain.NewVm(v.Id.Hex(), v.Name, domain.VmStatus(v.Status), v.UserId, v.ToVmConfig(), v.CreatedAt, v.UpdatedAt, v.ExpirationAt, v.DeletedAt)
+	return domain.NewVm(v.Id.Hex(), v.Name, domain.VmStatus(v.Status), v.UserId, v.Ip, v.ToVmConfig(), v.CreatedAt, v.UpdatedAt, v.ExpirationAt, v.DeletedAt)
 }
 
 func (v *Vm) ToVmConfig() *domain.VmConfig {
@@ -56,6 +57,7 @@ func (v *VmRepository) Insert(ctx context.Context, vm *domain.Vm) (string, error
 		Name:   vm.Name(),
 		Status: int(vm.Status()),
 		UserId: vm.UserId(),
+		Ip:     vm.Ip(),
 		Config: &VmConfig{
 			Cpu:    vm.Config().Cpu(),
 			Disk:   vm.Config().Disk(),
@@ -151,6 +153,7 @@ func (v *VmRepository) Update(ctx context.Context, vm *domain.Vm) error {
 			"name":          vm.Name(),
 			"status":        int(vm.Status()),
 			"user_id":       vm.UserId(),
+			"ip":            vm.Ip(),
 			"updated_at":    time.Now().UnixMilli(),
 			"expiration_at": vm.ExpirationAt(),
 			"config": &VmConfig{

@@ -5,6 +5,7 @@ type Vm struct {
 	name         string
 	status       VmStatus
 	userId       string
+	ip           string
 	config       *VmConfig
 	createdAt    int64
 	updatedAt    int64
@@ -43,8 +44,8 @@ const (
 	VmStatusStart VmStatus = 1
 )
 
-func NewVm(id string, name string, status VmStatus, userId string, cfg *VmConfig, createdAt int64, updatedAt int64, expirationAt int64, deletedAt int64) *Vm {
-	return &Vm{id: id, name: name, status: status, userId: userId, config: cfg, createdAt: createdAt, updatedAt: updatedAt, expirationAt: expirationAt, deletedAt: deletedAt}
+func NewVm(id string, name string, status VmStatus, userId string, ip string, cfg *VmConfig, createdAt int64, updatedAt int64, expirationAt int64, deletedAt int64) *Vm {
+	return &Vm{id: id, name: name, status: status, userId: userId, ip: ip, config: cfg, createdAt: createdAt, updatedAt: updatedAt, expirationAt: expirationAt, deletedAt: deletedAt}
 }
 
 func (v *Vm) Id() string {
@@ -61,6 +62,10 @@ func (v *Vm) Status() VmStatus {
 
 func (v *Vm) UserId() string {
 	return v.userId
+}
+
+func (v *Vm) Ip() string {
+	return v.ip
 }
 
 func (v *Vm) CreatedAt() int64 {

@@ -2,9 +2,11 @@ package app
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/zwtesttt/xzpCloud/internal/vm/domain"
 	"github.com/zwtesttt/xzpCloud/pkg/vmi"
+	v1 "kubevirt.io/api/core/v1"
 )
 
 type CreateVmInput struct {
@@ -29,7 +31,7 @@ func NewCreateVmHandler(vmRepo domain.Repository, vc vmi.VirtualMachineInterface
 }
 
 func (h *CreateVmHandler) Handle(ctx context.Context, input *CreateVmInput) (string, error) {
-	_, err := h.vmiCli.Create(ctx, &vmi.Config{
+	vm, err := h.vmiCli.Create(ctx, &vmi.Config{
 		Name:      input.Name,
 		Image:     "centos",
 		Cpu:       input.Config.Cpu,
@@ -41,7 +43,11 @@ func (h *CreateVmHandler) Handle(ctx context.Context, input *CreateVmInput) (str
 		return "", err
 	}
 
-	id, err := h.vmRepo.Insert(ctx, domain.NewVm("", input.Name, domain.VmStatusStart, input.UserId, domain.NewVmConfig(input.Config.Cpu, input.Config.Disk, input.Config.Memory), 0, 0, 0, 0))
+	vmi := vm.(*v1.VirtualMachine)
+
+	fmt.Println(vmi)
+
+	id, err := h.vmRepo.Insert(ctx, domain.NewVm("", input.Name, domain.VmStatusStart, input.UserId, "", domain.NewVmConfig(input.Config.Cpu, input.Config.Disk, input.Config.Memory), 0, 0, 0, 0))
 	if err != nil {
 		return "", err
 	}
